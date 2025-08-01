@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 상담 요약 리포트 - 상담이 끝나면, 기억은 흐릿해집니다</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-white {
+            background: white;
+        }
+
+        .section-gray {
+            background: #f8fafc;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #1f2937;
+        }
+
+        /* Problem Section */
+        .problem-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .problem-question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #dc2626;
+            margin-bottom: 1.5rem;
+        }
+
+        .problem-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4b5563;
+        }
+
+        /* Solution Section */
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .feature-desc {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .process-flow {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin: 3rem 0;
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            color: #667eea;
+            font-size: 1.5rem;
+        }
+
+        /* Use Case Section */
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .target-audience {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .audience-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .audience-icon {
+            width: 40px;
+            height: 40px;
+            background: #10b981;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .email-form {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .hero {
+                padding: 100px 0 60px;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .problem-card,
+            .process-flow,
+            .email-form {
+                padding: 1.5rem;
+            }
+
+            .flow-steps {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .solution-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .target-audience {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">AI 상담 리포트</div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section - Attention -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="fade-in">상담이 끝나면, 기억은 흐릿해집니다.<br>AI는 그것까지 기록합니다.</h1>
+            <p class="fade-in">말로 주고받은 금융 상담, 이제 AI가 요약해드립니다.<br>더 정확하게, 더 안전하게, 더 편리하게.</p>
+        </div>
+    </section>
+
+    <!-- Problem Section - Interest -->
+    <section class="section section-white">
+        <div class="container">
+            <h2 class="section-title">지난주에 은행에서 상담한 내용, 정확히 기억나시나요?</h2>
+            <div class="problem-card fade-in">
+                <div class="problem-question">많은 고객이 상담 내용을 제대로 기록하지 못해,<br>중복 문의, 잘못된 판단, 사후 관리의 어려움을 겪습니다.</div>
+                <div class="problem-text">
+                    은행 입장에서도 상담 기록이 수기로 남거나 간략한 전산 입력에 그쳐,<br>
+                    불완전판매 논란과 민원 대응 리스크에 노출됩니다.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section - Desire -->
+    <section class="section section-gray">
+        <div class="container">
+            <h2 class="section-title">AI 상담 요약 리포트, 이렇게 작동합니다</h2>
+            
+            <div class="process-flow fade-in">
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <span>🎙️</span>
+                        <span>실시간 상담 음성</span>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <span>📝</span>
+                        <span>STT 전환</span>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <span>🤖</span>
+                        <span>AI 요약</span>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <span>📊</span>
+                        <span>고객 맞춤 리포트</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="solution-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎙️</div>
+                    <h3 class="feature-title">STT 자동 기록</h3>
+                    <p class="feature-desc">실시간 상담 음성을 정확히 텍스트로 전환</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📑</div>
+                    <h3 class="feature-title">AI 상담 요약</h3>
+                    <p class="feature-desc">핵심만 뽑아 고객 이해도를 높이는 요약 리포트</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🔗</div>
+                    <h3 class="feature-title">블록체인 저장</h3>
+                    <p class="feature-desc">상담 내용 위·변조 불가, 민원 대응 자료로 활용 가능</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">개인화 콘텐츠</h3>
+                    <p class="feature-desc">관심 상품, 리스크 요소 등을 분석해 맞춤 제안</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Case Section - Desire -->
+    <section class="section section-white">
+        <div class="container">
+            <h2 class="section-title">이런 고객에게 특히 효과적입니다</h2>
+            
+            <div class="target-audience">
+                <div class="audience-item fade-in">
+                    <div class="audience-icon">✅</div>
+                    <div>투자 상담 후에도 내용이 헷갈리는 직장인 고객</div>
+                </div>
+                <div class="audience-item fade-in">
+                    <div class="audience-icon">✅</div>
+                    <div>세무/대출 상담 후 증빙이 필요한 자영업자 고객</div>
+                </div>
+                <div class="audience-item fade-in">
+                    <div class="audience-icon">✅</div>
+                    <div>상담 이력을 기반으로 후속 관리를 원하는 PB/VIP 고객</div>
+                </div>
+            </div>
+
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-text">
+                    "지난 상담 리포트를 다시 보면서, 투자 결정을 훨씬 쉽게 할 수 있었어요."
+                </div>
+                <div class="testimonial-author">– 40대 직장인 고객, 증권 PB 상담 후</div>
+            </div>
+
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-text">
+                    "민원 발생 시, 정확한 상담 내용을 증거로 제출할 수 있어 안심입니다."
+                </div>
+                <div class="testimonial-author">– 지점장, 불완전판매 대응 사례</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section - Action -->
+    <section class="section cta-section">
+        <div class="container">
+            <h2 class="cta-title fade-in">지금 알림 신청하고, 베타 테스트 기회 받기</h2>
+            <p class="cta-subtitle fade-in">당신의 상담 경험이 어떻게 바뀌는지, 직접 확인해보세요.</p>
+            
+            <div class="email-form fade-in">
+                <form action="https://formspree.io/f/xeozzwkn" method="POST">
+                    <div class="form-group">
+                        <label for="email" class="form-label">이메일 주소</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <button type="submit" class="submit-btn">상담 리포트 베타 신청하기</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 AI 상담 리포트. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 
